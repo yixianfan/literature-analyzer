@@ -1,5 +1,5 @@
 """
-API接口测试
+API interface tests
 """
 
 import pytest
@@ -11,7 +11,7 @@ client = TestClient(app)
 
 
 def test_root():
-    """测试根路径"""
+    """Test root"""
     response = client.get("/")
     assert response.status_code == 200
     data = response.json()
@@ -21,7 +21,7 @@ def test_root():
 
 
 def test_health_check():
-    """测试健康检查"""
+    """Test health check"""
     response = client.get("/health")
     assert response.status_code == 200
     data = response.json()
@@ -30,7 +30,7 @@ def test_health_check():
 
 
 def test_paper_types():
-    """测试获取文献类型"""
+    """Test get paper types"""
     response = client.get("/paper-types")
     assert response.status_code == 200
     data = response.json()
@@ -41,7 +41,7 @@ def test_paper_types():
 
 
 def test_analyze_text_clinical():
-    """测试分析临床研究文本"""
+    """Test analyze clinical text"""
     text_data = {
         "text": "This randomized controlled trial evaluated a new treatment in 100 patients with diabetes. The intervention group showed significant improvement (p<0.001).",
         "title": "Diabetes Treatment Study"
@@ -56,7 +56,7 @@ def test_analyze_text_clinical():
 
 
 def test_analyze_text_case():
-    """测试分析病例报告文本"""
+    """Test analyze case report text"""
     text_data = {
         "text": "Case report: 65-year-old male patient presented with chest pain. Diagnosed with atrial fibrillation. Treated with anticoagulation therapy.",
         "title": "Case Report"
@@ -68,7 +68,7 @@ def test_analyze_text_case():
 
 
 def test_analyze_text_basic():
-    """测试分析基础研究文本"""
+    """Test analyze basic text"""
     text_data = {
         "text": "The mechanism of gene regulation was investigated using cell culture experiments. Results showed increased protein expression.",
         "title": "Gene Regulation Study"
@@ -80,7 +80,7 @@ def test_analyze_text_basic():
 
 
 def test_analyze_text_too_short():
-    """测试文本过短"""
+    """Test text too short"""
     text_data = {
         "text": "Too short",
         "title": "Test"
@@ -90,18 +90,18 @@ def test_analyze_text_too_short():
 
 
 def test_analyze_doi():
-    """测试分析DOI"""
+    """Test analyze DOI"""
     # 注意：这个测试需要网络连接，实际情况可能需要mock
     doi_data = {
         "doi": "10.1000/xyz123"
     }
     response = client.post("/analyze/doi", json=doi_data)
-    # 由于是测试DOI，可能返回404或500，这是预期的
+    # As test DOI, may return 404 or 500, which is expected
     assert response.status_code in [400, 404, 500]
 
 
 def test_analyze_doi_invalid():
-    """测试无效DOI"""
+    """Test invalid DOI"""
     doi_data = {
         "doi": "invalid-doi"
     }
@@ -110,7 +110,7 @@ def test_analyze_doi_invalid():
 
 
 def test_analyze_doi_empty():
-    """测试空DOI"""
+    """Test empty DOI"""
     doi_data = {
         "doi": ""
     }

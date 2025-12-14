@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-启动文献整理工具服务器
+Start literature analyzer server
 """
 
 import uvicorn
@@ -8,13 +8,13 @@ import sys
 
 
 def main():
-    """启动服务器"""
+    """Start server"""
     print("="*60)
     print("文献整理在线工具")
     print("="*60)
-    print("\n正在启动服务器...")
-    print("访问地址: http://localhost:8000")
-    print("API文档: http://localhost:8000/docs")
+    print("\n正在Start server...")
+    print("Access address: http://localhost:8000")
+    print("API docs: http://localhost:8000/docs")
     print("\n按 Ctrl+C 停止服务器")
     print("="*60 + "\n")
 
@@ -27,10 +27,10 @@ def main():
             log_level="info"
         )
     except KeyboardInterrupt:
-        print("\n\n服务器已停止")
+        print("\n\nServer stopped")
         sys.exit(0)
     except Exception as e:
-        print(f"\n启动失败: {e}")
+        print(f"\nStartup failed: {e}")
         sys.exit(1)
 
 

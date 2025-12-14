@@ -1,5 +1,5 @@
 """
-DOI解析器测试
+DOI resolver tests
 """
 
 import pytest
@@ -7,33 +7,33 @@ from modules.doi_resolver import DOIResolver
 
 
 class TestDOIResolver:
-    """DOI解析器测试类"""
+    """DOI resolver tests类"""
 
     @pytest.fixture
     def resolver(self):
-        """创建DOI解析器实例"""
+        """Create DOI resolver instance"""
         return DOIResolver()
 
     def test_extract_doi_from_url(self, resolver):
-        """测试从URL中提取DOI"""
+        """Test extract DOI from URL"""
         doi_url = "https://doi.org/10.1000/xyz123"
         doi = resolver._extract_doi(doi_url)
         assert doi == "10.1000/xyz123"
 
     def test_extract_doi_from_string(self, resolver):
-        """测试从字符串中提取DOI"""
+        """Test extract DOI from string"""
         doi_string = "doi: 10.1000/xyz123"
         doi = resolver._extract_doi(doi_string)
         assert doi == "10.1000/xyz123"
 
     def test_extract_doi_invalid(self, resolver):
-        """测试无效DOI"""
+        """Test invalid DOI"""
         invalid_string = "not a doi"
         doi = resolver._extract_doi(invalid_string)
         assert doi is None
 
     def test_doi_pattern(self, resolver):
-        """测试DOI模式匹配"""
+        """Test DOI pattern"""
         # 有效DOI
         assert resolver.DOI_PATTERN.match("10.1000/xyz123")
         assert resolver.DOI_PATTERN.match("10.1371/journal.pone.0123456")
@@ -43,7 +43,7 @@ class TestDOIResolver:
         assert not resolver.DOI_PATTERN.match("invalid doi")
 
     def test_format_metadata(self, resolver):
-        """测试元数据格式化"""
+        """Test format metadata"""
         # 模拟CrossRef API响应
         mock_metadata = {
             'title': ['Test Article'],

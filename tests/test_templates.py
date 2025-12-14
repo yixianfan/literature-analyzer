@@ -1,5 +1,5 @@
 """
-结构化模板测试
+Structured template tests
 """
 
 import pytest
@@ -9,14 +9,14 @@ from templates.basic_template import BasicResearchTemplate
 
 
 class TestClinicalResearchTemplate:
-    """临床研究模板测试"""
+    """Clinical research template tests"""
 
     @pytest.fixture
     def template(self):
         return ClinicalResearchTemplate()
 
     def test_extract_clinical_research(self, template):
-        """测试临床研究信息提取"""
+        """Test extract clinical research"""
         text = """
         Background: Diabetes treatment study.
         Objective: To evaluate new drug efficacy.
@@ -35,14 +35,14 @@ class TestClinicalResearchTemplate:
 
 
 class TestCaseReportTemplate:
-    """病例报告模板测试"""
+    """Case report template tests"""
 
     @pytest.fixture
     def template(self):
         return CaseReportTemplate()
 
     def test_extract_case_report(self, template):
-        """测试病例报告信息提取"""
+        """Test extract case report"""
         text = """
         Case Report: 65-year-old male with chest pain.
         Clinical Presentation: Patient presented with shortness of breath.
@@ -61,14 +61,14 @@ class TestCaseReportTemplate:
 
 
 class TestBasicResearchTemplate:
-    """基础研究模板测试"""
+    """Basic research template tests"""
 
     @pytest.fixture
     def template(self):
         return BasicResearchTemplate()
 
     def test_extract_basic_research(self, template):
-        """测试基础研究信息提取"""
+        """Test extract basic research"""
         text = """
         Background: Gene regulation mechanism unclear.
         Methods: Cell culture and Western blot.

@@ -1,6 +1,6 @@
 """
-文献整理工具使用示例
-演示如何使用文献分析API
+Literature analyzer usage examples
+Demonstrate how to use literature analysis API
 """
 
 import requests
@@ -11,7 +11,7 @@ BASE_URL = "http://localhost:8000"
 
 
 def analyze_text_example():
-    """分析文献文本示例"""
+    """Analyze paper text example"""
     print("\n" + "="*60)
     print("示例1: 分析临床研究文本")
     print("="*60)
@@ -62,7 +62,7 @@ def analyze_text_example():
 
 
 def analyze_case_report_example():
-    """分析病例报告示例"""
+    """Analyze case report example"""
     print("\n" + "="*60)
     print("示例2: 分析病例报告")
     print("="*60)
@@ -117,7 +117,7 @@ def analyze_case_report_example():
 
 
 def analyze_basic_research_example():
-    """分析基础研究示例"""
+    """Analyze basic research example"""
     print("\n" + "="*60)
     print("示例3: 分析基础研究")
     print("="*60)
@@ -173,7 +173,7 @@ def analyze_basic_research_example():
 
 
 def analyze_doi_example():
-    """通过DOI分析示例"""
+    """Analyze by DOI example"""
     print("\n" + "="*60)
     print("示例4: 通过DOI分析文献")
     print("="*60)
@@ -184,7 +184,7 @@ def analyze_doi_example():
     data = {"doi": doi}
 
     try:
-        print(f"正在分析DOI: {doi}")
+        print(f"Analyzing DOI: {doi}")
         response = requests.post(f"{BASE_URL}/analyze/doi", json=data, timeout=30)
 
         if response.status_code == 200:
@@ -201,7 +201,7 @@ def analyze_doi_example():
                 print(f"  - 发表日期: {metadata.get('publication_date', 'N/A')}")
 
         else:
-            print(f"分析失败: {response.status_code}")
+            print(f"Analysis failed: {response.status_code}")
             print(response.json())
 
     except Exception as e:
@@ -209,9 +209,9 @@ def analyze_doi_example():
 
 
 def get_paper_types_example():
-    """获取支持的文献类型"""
+    """Get supported paper types"""
     print("\n" + "="*60)
-    print("示例5: 获取支持的文献类型")
+    print("示例5: Get supported paper types")
     print("="*60)
 
     try:
@@ -228,26 +228,26 @@ def get_paper_types_example():
 
 
 def main():
-    """主函数"""
+    """Main function"""
     print("\n" + "="*60)
-    print("文献整理在线工具 - 使用示例")
+    print("Literature Analyzer - Usage Examples")
     print("="*60)
-    print("\n请确保服务已启动: python main.py")
+    print("\nPlease ensure server is started: python main.py")
 
-    # 检查服务是否运行
+    # Check if service is running
     try:
         response = requests.get(f"{BASE_URL}/health", timeout=5)
         if response.status_code == 200:
-            print("✓ 服务运行正常")
+            print("✓ Service is running normally")
         else:
-            print("✗ 服务未正常运行")
+            print("✗ Service is not running properly")
             return
     except:
-        print("✗ 无法连接到服务，请先启动服务")
-        print("  运行命令: python main.py")
+        print("✗ Cannot connect to service, please start service first")
+        print("  Run command: python main.py")
         return
 
-    # 运行示例
+    # Running examples
     analyze_text_example()
     analyze_case_report_example()
     analyze_basic_research_example()
@@ -255,7 +255,7 @@ def main():
     get_paper_types_example()
 
     print("\n" + "="*60)
-    print("所有示例完成！")
+    print("All examples completed!")
     print("="*60)
 
 

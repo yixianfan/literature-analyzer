@@ -1,5 +1,5 @@
 """
-运行测试脚本
+Run test script
 """
 
 import subprocess
@@ -7,9 +7,9 @@ import sys
 
 
 def run_tests():
-    """运行所有测试"""
+    """Run all tests"""
     print("="*60)
-    print("运行文献整理工具测试")
+    print("Run literature analyzer tests")
     print("="*60)
 
     try:
@@ -26,14 +26,14 @@ def run_tests():
             print(result.stderr)
 
         if result.returncode == 0:
-            print("\n✓ 所有测试通过！")
+            print("\n✓ All tests passed!")
         else:
-            print("\n✗ 部分测试失败")
+            print("\n✗ Some tests failed")
             sys.exit(1)
 
     except FileNotFoundError:
-        print("错误: 未找到pytest，请先安装测试依赖")
-        print("运行: pip install pytest pytest-asyncio")
+        print("Error: pytest not found, please install test dependencies first")
+        print("Run: pip install pytest pytest-asyncio")
         sys.exit(1)
 
 

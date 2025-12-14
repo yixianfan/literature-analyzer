@@ -1,5 +1,5 @@
 """
-文献类型分类器测试
+Paper type classifier tests
 """
 
 import pytest
@@ -7,15 +7,15 @@ from modules.paper_classifier import PaperClassifier
 
 
 class TestPaperClassifier:
-    """文献分类器测试类"""
+    """Paper classifier test class"""
 
     @pytest.fixture
     def classifier(self):
-        """创建分类器实例"""
+        """Create classifier instance"""
         return PaperClassifier()
 
     def test_clinical_research_classification(self, classifier):
-        """测试临床研究分类"""
+        """Test clinical research classification"""
         clinical_text = """
         Background: This randomized controlled trial aims to evaluate the efficacy
         of a new treatment in patients with diabetes. Methods: We conducted a
@@ -29,7 +29,7 @@ class TestPaperClassifier:
         assert confidence > 0.5
 
     def test_case_report_classification(self, classifier):
-        """测试病例报告分类"""
+        """Test case report classification"""
         case_text = """
         Case Report: We report a 65-year-old male patient who presented with
         chest pain and shortness of breath. Clinical examination revealed
@@ -42,7 +42,7 @@ class TestPaperClassifier:
         assert confidence > 0.5
 
     def test_basic_research_classification(self, classifier):
-        """测试基础研究分类"""
+        """Test basic research classification"""
         basic_text = """
         Background: The molecular mechanism of gene regulation remains unclear.
         Methods: We performed cell culture experiments and Western blot analysis
@@ -55,7 +55,7 @@ class TestPaperClassifier:
         assert confidence > 0.5
 
     def test_get_classification_details(self, classifier):
-        """测试获取详细分类信息"""
+        """Test get classification details"""
         text = "This randomized controlled trial included 100 patients..."
         details = classifier.get_classification_details(text)
 
