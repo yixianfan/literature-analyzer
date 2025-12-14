@@ -5,9 +5,9 @@ Coordinates paper classification and structured extraction
 
 from typing import Dict
 from .paper_classifier import PaperClassifier
-from ..templates.clinical_template import ClinicalResearchTemplate
-from ..templates.case_template import CaseReportTemplate
-from ..templates.basic_template import BasicResearchTemplate
+from templates.clinical_template import ClinicalResearchTemplate
+from templates.case_template import CaseReportTemplate
+from templates.basic_template import BasicResearchTemplate
 
 
 class InfoExtractor:
