@@ -1,6 +1,6 @@
 """
-基础研究结构化模板
-按照"科学问题-研究方法-研究结果-研究结论-作用机制"模块
+Basic Research Structured Template
+按照"科学问题-研究方法-results-conclusion-作用机制"模块
 """
 
 from typing import Dict
@@ -14,8 +14,8 @@ class BasicResearchTemplate:
     MODULES = {
         'scientific_question': '科学问题',
         'research_method': '研究方法',
-        'results': '研究结果',
-        'conclusion': '研究结论',
+        'results': 'results',
+        'conclusion': 'conclusion',
         'mechanism': '作用机制'
     }
 
@@ -45,7 +45,7 @@ class BasicResearchTemplate:
         }
 
     def _extract_scientific_question(self, text: str, text_lower: str) -> str:
-        """提取科学问题"""
+        """Extract scientific question"""
         patterns = [
             r'(?:background|introduction)[:\s]*(.*?)(?=\n\n|\. [A-Z]|\. methods|\. objective)',
             r'(?:scientific question|research question)[:\s]*(.*?)(?=\n\n|\. [A-Z])',
@@ -60,7 +60,7 @@ class BasicResearchTemplate:
             if match:
                 return match.group(1).strip()[:400]
 
-        # 查找研究空白
+        # # Find research gap
         gap_patterns = [
             r'(?:however|然而) (.*?)(?:remains|仍需|仍待) (.*?)(?=\.|,|\n)',
             r'(?:gaps|空白) (?:in|存在) (.*?)(?=\.|,|\n)'
@@ -71,14 +71,14 @@ class BasicResearchTemplate:
             if match:
                 return match.group(0).strip()[:400]
 
-        return "未明确提及科学问题"
+        return "Scientific question not clearly stated"
 
     def _extract_research_method(self, text: str, text_lower: str) -> str:
-        """提取研究方法"""
+        """Extract methods"""
         patterns = [
             r'methods[:\s]*(.*?)(?=\n\n|\. [A-Z]|\. results|\. conclusion)',
             r'methodology[:\s]*(.*?)(?=\n\n|\. [A-Z]|\. results)',
-            r'研究方法[:\s]*(.*?)(?=\n\n|研究结果)',
+            r'研究方法[:\s]*(.*?)(?=\n\n|results)',
             r'(?:we (?:used|performed|conducted|measured)) (.*?)(?=\.|,|\n)',
             r'(?:cell culture|western blot|qPCR|mice|rat) (.*?)(?=\.|,|\n)',
             r'(?:实验方法|实验设计)[:\s]*(.*?)(?=\n\n|结果)'
@@ -89,13 +89,13 @@ class BasicResearchTemplate:
             if match:
                 return match.group(1).strip()[:500]
 
-        return "未明确提及研究方法"
+        return "Methods not clearly stated"
 
     def _extract_results(self, text: str, text_lower: str) -> str:
-        """提取研究结果"""
+        """Extract results"""
         patterns = [
             r'results[:\s]*(.*?)(?=\n\n|\. [A-Z]|\. conclusion|\. discussion)',
-            r'研究结果[:\s]*(.*?)(?=\n\n|研究结论)',
+            r'results[:\s]*(.*?)(?=\n\n|conclusion)',
             r'(?:we found|results show|showed|found that) (.*?)(?=\.|,|\n)',
             r'(?:significant|increased|decreased|enhanced|reduced) (.*?)(?=\.|,|\n)',
             r'(?:expression|levels|activity) (?:of|were) (.*?)(?=\.|,|\n)',
@@ -108,14 +108,14 @@ class BasicResearchTemplate:
                 result = match.group(1) if match.lastindex and match.lastindex >= 1 else match.group(0)
                 return result.strip()[:600]
 
-        return "未明确提及研究结果"
+        return "Results not clearly stated"
 
     def _extract_conclusion(self, text: str, text_lower: str) -> str:
-        """提取研究结论"""
+        """提取conclusion"""
         patterns = [
             r'conclusion[:\s]*(.*?)(?=\n\n|\. [A-Z]|\. discussion|$)',
             r'discussion[:\s]*(.*?)(?=\n\n|\. [A-Z]|$)',
-            r'研究结论[:\s]*(.*?)(?=\n\n|$)',
+            r'conclusion[:\s]*(.*?)(?=\n\n|$)',
             r'(?:in conclusion|these findings|demonstrate that|indicates that) (.*?)(?=\.|,|\n|$)',
             r'(?:consequently|therefore|thus) (.*?)(?=\.|,|\n|$)'
         ]
@@ -125,14 +125,14 @@ class BasicResearchTemplate:
             if match:
                 return match.group(1).strip()[:500]
 
-        return "未明确提及研究结论"
+        return "Conclusion not clearly stated"
 
     def _extract_mechanism(self, text: str, text_lower: str) -> str:
-        """提取作用机制"""
+        """Extract mechanism"""
         patterns = [
             r'mechanism[:\s]*(.*?)(?=\n\n|\. [A-Z]|\. conclusion|$)',
             r'(?:mechanism of action|pathway|signaling)[:\s]*(.*?)(?=\n\n|\. [A-Z])',
-            r'作用机制[:\s]*(.*?)(?=\n\n|研究结论)',
+            r'作用机制[:\s]*(.*?)(?=\n\n|conclusion)',
             r'(?:through|via|by) (.*?)(?:pathway|mechanism|process) (.*?)(?=\.|,|\n)',
             r'(?:regulates|activates|inhibits|mediates) (.*?)(?=\.|,|\n)',
             r'(?:分子机制|信号通路|调控机制)[:\s]*(.*?)(?=\n\n|结论)'
@@ -143,7 +143,7 @@ class BasicResearchTemplate:
             if match:
                 return match.group(1).strip()[:500]
 
-        # 查找分子相互作用
+        # # Find molecular interactions
         interaction_patterns = [
             r'(?:interaction|相互作用|结合) (?:between|between) (.*?)(?=\.|,|\n)',
             r'(?:up[- ]?regulation|down[- ]?regulation|上调|下调) (.*?)(?=\.|,|\n)'
@@ -154,4 +154,4 @@ class BasicResearchTemplate:
             if match:
                 return match.group(0).strip()[:500]
 
-        return "未明确提及作用机制"
+        return "Mechanism not clearly stated"

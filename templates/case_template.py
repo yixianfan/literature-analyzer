@@ -1,6 +1,6 @@
 """
-病例报告结构化模板
-参考Blood期刊的5大模块
+Case Report Structured Template
+Based on Blood journal's 5-module structure
 """
 
 from typing import Dict
@@ -59,15 +59,15 @@ class CaseReportTemplate:
             if match:
                 return match.group(1).strip()[:500]
 
-        # 如果没有匹配，提取患者信息
+        # # If no match, extract patient information
         patient_info = self._extract_patient_info(text)
         if patient_info:
             return patient_info
 
-        return "未明确提及病例概述"
+        return "Case summary not clearly stated"
 
     def _extract_clinical_presentation(self, text: str, text_lower: str) -> str:
-        """提取临床表现"""
+        """Extract clinical presentation"""
         patterns = [
             r'clinical presentation[:\s]*(.*?)(?=\n\n|\. [A-Z]|\. diagnosis|\. treatment)',
             r'presentation[:\s]*(.*?)(?=\n\n|\. [A-Z]|\. diagnosis)',
@@ -81,10 +81,10 @@ class CaseReportTemplate:
             if match:
                 return match.group(1).strip()[:500]
 
-        return "未明确提及临床表现"
+        return "Clinical presentation not clearly stated"
 
     def _extract_diagnosis(self, text: str, text_lower: str) -> str:
-        """提取诊断过程"""
+        """Extract diagnosis"""
         patterns = [
             r'diagnosis[:\s]*(.*?)(?=\n\n|\. [A-Z]|\. treatment|\. outcome)',
             r'diagnostic[:\s]*(.*?)(?=\n\n|\. [A-Z]|\. treatment)',
@@ -98,10 +98,10 @@ class CaseReportTemplate:
             if match:
                 return match.group(1).strip()[:500]
 
-        return "未明确提及诊断过程"
+        return "Diagnosis not clearly stated"
 
     def _extract_treatment(self, text: str, text_lower: str) -> str:
-        """提取治疗方案"""
+        """Extract treatment"""
         patterns = [
             r'treatment[:\s]*(.*?)(?=\n\n|\. [A-Z]|\. outcome|\. follow-up)',
             r'management[:\s]*(.*?)(?=\n\n|\. [A-Z]|\. outcome)',
@@ -115,10 +115,10 @@ class CaseReportTemplate:
             if match:
                 return match.group(1).strip()[:500]
 
-        return "未明确提及治疗方案"
+        return "Treatment not clearly stated"
 
     def _extract_outcome(self, text: str, text_lower: str) -> str:
-        """提取治疗结果"""
+        """Extract outcome"""
         patterns = [
             r'outcome[:\s]*(.*?)(?=\n\n|\. [A-Z]|$)',
             r'follow[- ]?up[:\s]*(.*?)(?=\n\n|\. [A-Z]|$)',
@@ -132,7 +132,7 @@ class CaseReportTemplate:
             if match:
                 return match.group(1).strip()[:500]
 
-        return "未明确提及治疗结果"
+        return "Outcome not clearly stated"
 
     def _extract_patient_info(self, text: str) -> str:
         """提取患者基本信息"""
