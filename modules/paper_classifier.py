@@ -1,6 +1,6 @@
 """
-文献类型识别模块
-自动识别文献类型：临床研究、Case报道、基础研究
+Paper Type Classification Module
+Automatically identifies paper types: Clinical Research, Case Reports, Basic Research
 """
 
 import re
@@ -8,85 +8,85 @@ from typing import Dict, List, Tuple
 
 
 class PaperClassifier:
-    """文献类型分类器"""
+    """Paper type classifier"""
 
-    # 临床研究关键词
+    # Clinical research keywords
     CLINICAL_KEYWORDS = {
         'study_design': [
             'randomized controlled trial', 'RCT', 'cohort', 'case-control',
             'cross-sectional', 'prospective', 'retrospective', 'clinical trial',
-            '随机对照试验', '队列研究', '病例对照', '横断面研究'
+            'randomized controlled trial', 'cohort study', 'case-control study', 'cross-sectional study'
         ],
         'participants': [
             'patients', 'participants', 'subjects', 'n =', 'patients with',
-            '患者', '受试者', '研究对象'
+            'patients', 'subjects', 'study subjects'
         ],
         'intervention': [
             'treatment', 'intervention', 'therapy', 'drug', 'medication',
-            'surgery', 'procedure', '治疗', '干预', '药物', '手术'
+            'surgery', 'procedure', 'treatment', 'intervention', 'drug', 'surgery'
         ],
         'outcomes': [
             'outcome', 'endpoint', 'efficacy', 'safety', 'effectiveness',
-            '结局', '终点', '有效性', '安全性'
+            'outcome', 'endpoint', 'efficacy', 'safety'
         ],
         'statistics': [
             'p-value', 'confidence interval', 'odds ratio', 'hazard ratio',
-            '95% CI', 'P <', 'P =', 'p<', '置信区间', '比值比'
+            '95% CI', 'P <', 'P =', 'p<', 'confidence interval', 'odds ratio'
         ]
     }
 
-    # Case报道关键词
+    # Case report keywords
     CASE_KEYWORDS = {
         'case_report': [
-            'case report', 'case presentation', 'case study', '病例报告',
-            '病例报道', '案例报告'
+            'case report', 'case presentation', 'case study', 'case report',
+            'case study', 'case report'
         ],
         'patient_info': [
             'patient was', 'patient presented with', 'patient developed',
-            '患者', '岁', '年', '男性', '女性'
+            'patient', 'years old', 'year old', 'male', 'female'
         ],
         'clinical_features': [
             'presented with', 'complained of', 'diagnosed with',
-            '表现为', '主诉', '诊断'
+            'presented with', 'chief complaint', 'diagnosis'
         ],
         'diagnosis': [
             'diagnosis', 'diagnosed', 'confirmed by',
-            '诊断', '确诊', '证实'
+            'diagnosis', 'diagnosed', 'confirmed'
         ],
         'treatment_outcome': [
             'treatment', 'therapy', 'outcome', 'follow-up',
-            '治疗', '疗效', '结果', '随访'
+            'treatment', 'efficacy', 'outcome', 'follow-up'
         ]
     }
 
-    # 基础研究关键词
+    # Basic research keywords
     BASIC_KEYWORDS = {
         'methods': [
             'methodology', 'experiment', 'cell culture', 'mice', 'rats',
-            '方法', '实验', '细胞培养', '小鼠', '大鼠'
+            'methods', 'experiment', 'cell culture', 'mice', 'rats'
         ],
         'molecular': [
             'gene', 'protein', 'expression', 'pathway', 'mechanism',
-            '基因', '蛋白', '表达', '通路', '机制'
+            'gene', 'protein', 'expression', 'pathway', 'mechanism'
         ],
         'results_data': [
             'increased', 'decreased', 'significant', 'data show',
-            '增加', '减少', '显著', '数据显示'
+            'increased', 'decreased', 'significant', 'data show'
         ],
         'biological': [
             'biological', 'molecular', 'cellular', 'biochemical',
-            '生物', '分子', '细胞', '生化'
+            'biological', 'molecular', 'cellular', 'biochemical'
         ]
     }
 
     def __init__(self):
-        """初始化分类器"""
+        """Initialize the classifier"""
         self.clinical_patterns = self._compile_patterns(self.CLINICAL_KEYWORDS)
         self.case_patterns = self._compile_patterns(self.CASE_KEYWORDS)
         self.basic_patterns = self._compile_patterns(self.BASIC_KEYWORDS)
 
     def _compile_patterns(self, keywords_dict: Dict[str, List[str]]) -> Dict[str, List[re.Pattern]]:
-        """编译关键词为正则表达式"""
+        """Compile keywords into regular expressions"""
         patterns = {}
         for category, keywords in keywords_dict.items():
             patterns[category] = [
@@ -96,30 +96,30 @@ class PaperClassifier:
 
     def classify(self, text: str) -> Tuple[str, float]:
         """
-        分类文献类型
+        Classify paper type
 
         Args:
-            text: 文献文本
+            text: Paper text
 
         Returns:
-            Tuple[文献类型, 置信度]
+            Tuple[paper type, confidence score]
         """
-        # 计算各类别得分
+        # Calculate scores for each category
         clinical_score = self._calculate_score(text, self.clinical_patterns)
         case_score = self._calculate_score(text, self.case_patterns)
         basic_score = self._calculate_score(text, self.basic_patterns)
 
-        # 计算归一化得分
+        # Calculate normalized scores
         scores = {
             'clinical_research': clinical_score,
             'case_report': case_score,
             'basic_research': basic_score
         }
 
-        # 求最高得分
+        # Get highest score
         total_score = sum(scores.values())
         if total_score == 0:
-            return 'basic_research', 0.5  # 默认基础研究
+            return 'basic_research', 0.5  # Default to basic research
 
         max_type = max(scores, key=scores.get)
         confidence = scores[max_type] / total_score
@@ -127,20 +127,20 @@ class PaperClassifier:
         return max_type, confidence
 
     def _calculate_score(self, text: str, patterns: Dict[str, List[re.Pattern]]) -> float:
-        """计算文本得分"""
+        """Calculate text score"""
         score = 0.0
         text_lower = text.lower()
 
         for category, pattern_list in patterns.items():
             matches = sum(1 for pattern in pattern_list if pattern.search(text_lower))
-            # 根据类别设置权重
+            # Set weight based on category
             weight = self._get_category_weight(category)
             score += matches * weight
 
         return score
 
     def _get_category_weight(self, category: str) -> float:
-        """获取类别权重"""
+        """Get category weight"""
         weights = {
             'study_design': 3.0,
             'participants': 2.5,
@@ -161,13 +161,13 @@ class PaperClassifier:
 
     def get_classification_details(self, text: str) -> Dict:
         """
-        获取详细分类信息
+        Get detailed classification information
 
         Args:
-            text: Returns:
-             文献文本
+            text: Paper text
 
-       包含详细分类信息的字典
+        Returns:
+            Dictionary containing detailed classification information
         """
         paper_type, confidence = self.classify(text)
 
@@ -184,8 +184,8 @@ class PaperClassifier:
                 'basic_research': basic_score
             },
             'type_description': {
-                'clinical_research': '临床研究',
-                'case_report': '病例报告',
-                'basic_research': '基础研究'
+                'clinical_research': 'Clinical Research',
+                'case_report': 'Case Report',
+                'basic_research': 'Basic Research'
             }[paper_type]
         }

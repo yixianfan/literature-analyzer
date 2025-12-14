@@ -1,6 +1,6 @@
 """
-信息提取模块
-协调文献分类和结构化提取
+Information Extraction Module
+Coordinates paper classification and structured extraction
 """
 
 from typing import Dict
@@ -11,10 +11,10 @@ from ..templates.basic_template import BasicResearchTemplate
 
 
 class InfoExtractor:
-    """信息提取器"""
+    """Information extractor"""
 
     def __init__(self):
-        """初始化提取器"""
+        """Initialize the extractor"""
         self.classifier = PaperClassifier()
         self.templates = {
             'clinical_research': ClinicalResearchTemplate(),
@@ -24,33 +24,33 @@ class InfoExtractor:
 
     def extract(self, text: str, metadata: Dict = None) -> Dict:
         """
-        提取文献信息
+        Extract paper information
 
         Args:
-            text: 文献文本
-            metadata: 文献元数据
+            text: Paper text
+            metadata: Paper metadata
 
         Returns:
-            包含详细信息的字典
+            Dictionary containing detailed information
 
         Raises:
-            ValueError: 无法识别的文献类型
+            ValueError: Unrecognized paper type
         """
-        # 分类文献
+        # Classify paper
         classification = self.classifier.get_classification_details(text)
         paper_type = classification['type']
         confidence = classification['confidence']
 
-        # 获取模板
+        # Get template
         if paper_type not in self.templates:
-            raise ValueError(f"不支持的文献类型: {paper_type}")
+            raise ValueError(f"Unsupported paper type: {paper_type}")
 
         template = self.templates[paper_type]
 
-        # 提取结构化信息
+        # Extract structured information
         extracted_info = template.extract(text, metadata)
 
-        # 添加分类信息
+        # Add classification information
         extracted_info['classification'] = {
             'type': paper_type,
             'type_description': classification['type_description'],
@@ -61,30 +61,30 @@ class InfoExtractor:
 
     def get_paper_type_description(self, paper_type: str) -> str:
         """
-        获取文献类型描述
+        Get paper type description
 
         Args:
-            paper_type: 文献类型
+            paper_type: Paper type
 
         Returns:
-            类型描述
+            Type description
         """
         descriptions = {
-            'clinical_research': '临床研究',
-            'case_report': '病例报告',
-            'basic_research': '基础研究'
+            'clinical_research': 'Clinical Research',
+            'case_report': 'Case Report',
+            'basic_research': 'Basic Research'
         }
-        return descriptions.get(paper_type, '未知类型')
+        return descriptions.get(paper_type, 'Unknown type')
 
     def get_template_modules(self, paper_type: str) -> Dict:
         """
-        获取模板模块信息
+        Get template module information
 
         Args:
-            paper_type: 文献类型
+            paper_type: Paper type
 
         Returns:
-            模块信息字典
+            Module information dictionary
         """
         if paper_type not in self.templates:
             return {}

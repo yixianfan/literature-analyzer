@@ -1,6 +1,6 @@
 """
-DOI解析模块
-从DOI链接或DOI号提取文献信息
+DOI Resolution Module
+Extracts paper information from DOI links or DOI numbers
 """
 
 import re
@@ -11,7 +11,7 @@ from urllib.parse import quote
 
 
 class DOIResolver:
-    """DOI解析器"""
+    """DOI resolver"""
 
     # API endpoints
     CROSSREF_API = "https://api.crossref.org/works/"
@@ -19,7 +19,7 @@ class DOIResolver:
     DOI_PATTERN = re.compile(r'10\.\d+/.*')
 
     def __init__(self):
-        """初始化解析器"""
+        """Initialize the resolver"""
         self.session = requests.Session()
         self.session.headers.update({
             'User-Agent': 'Literature-Analyzer/1.0 (mailto:example@example.com)'
@@ -27,70 +27,70 @@ class DOIResolver:
 
     def resolve(self, doi_or_url: str) -> Dict:
         """
-        解析DOI或DOI URL
+        Resolve DOI or DOI URL
 
         Args:
-            doi_or_url: DOI字符串或DOI URL
+            doi_or_url: DOI string or DOI URL
 
         Returns:
-            文献元数据字典
+            Dictionary containing paper metadata
 
         Raises:
-            ValueError: 无效的DOI
-            requests.RequestException: 网络请求失败
+            ValueError: Invalid DOI
+            requests.RequestException: Network request failed
         """
-        # 提取DOI
+        # Extract DOI
         doi = self._extract_doi(doi_or_url)
         if not doi:
-            raise ValueError(f"无法提取有效DOI: {doi_or_url}")
+            raise ValueError(f"Unable to extract valid DOI: {doi_or_url}")
 
-        # 首先尝试从CrossRef API获取数据
+        # Try to get data from CrossRef API first
         try:
             metadata = self._get_from_crossref(doi)
             if metadata:
                 return self._format_metadata(metadata, doi)
         except Exception as e:
-            print(f"CrossRef API请求失败: {e}")
+            print(f"CrossRef API request failed: {e}")
 
-        # 如果CrossRef失败则尝试PubMed
+        # If CrossRef fails, try PubMed
         try:
             metadata = self._get_from_pubmed(doi)
             if metadata:
                 return self._format_metadata(metadata, doi)
         except Exception as e:
-            print(f"PubMed API请求失败: {e}")
+            print(f"PubMed API request failed: {e}")
 
-        raise ValueError(f"无法获取DOI {doi} 的文献信息")
+        raise ValueError(f"Unable to retrieve paper information for DOI {doi}")
 
     def _extract_doi(self, input_str: str) -> Optional[str]:
         """
-        从字符串中提取DOI
+        Extract DOI from string
 
         Args:
-            input_str: DOI字符串或DOI URL
+            input_str: DOI string or DOI URL
 
         Returns:
-            DOI字符串或None
+            DOI string or None
         """
-        # 清理字符串
+        # Clean string
         input_str = input_str.strip()
 
-        # 提取doi.org或dx.doi.org URL中的DOI
+        # Extract DOI from doi.org or dx.doi.org URL
         if 'doi.org' in input_str or 'dx.doi.org' in input_str:
-            # 提取DOI部分
+            # Extract DOI part
             match = self.DOI_PATTERN.search(input_str)
             return match.group(0) if match else None
 
-        # 直接匹配DOI
+        # Direct DOI match
         if self.DOI_PATTERN.match(input_str):
             return input_str
 
-        # 在字符串中搜索DOI
+        # Search for DOI in string
         match = self.DOI_PATTERN.search(input_str)
         return match.group(0) if match else None
 
     def _get_from_crossref(self, doi: str) -> Optional[Dict]:
-        """从CrossRef API获取元数据"""
+        """Get metadata from CrossRef API"""
         url = f"{self.CROSSREF_API}{quote(doi)}"
         response = self.session.get(url, timeout=10)
 
@@ -101,8 +101,8 @@ class DOIResolver:
         return None
 
     def _get_from_pubmed(self, doi: str) -> Optional[Dict]:
-        """从PubMed API获取元数据"""
-        # 首先通过DOI搜索PubMed ID
+        """Get metadata from PubMed API"""
+        # Search for PubMed ID by DOI first
         search_url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi"
         search_params = {
             'db': 'pubmed',
@@ -120,7 +120,7 @@ class DOIResolver:
         if not id_list:
             return None
 
-        # 获取详细信息
+        # Get detailed information
         pubmed_id = id_list[0]
         summary_params = {
             'db': 'pubmed',
@@ -137,14 +137,14 @@ class DOIResolver:
 
     def _format_metadata(self, metadata: Dict, doi: str) -> Dict:
         """
-        格式化元数据
+        Format metadata
 
         Args:
-            metadata: 原始元数据
-            doi: DOI字符串
+            metadata: Raw metadata
+            doi: DOI string
 
         Returns:
-            格式化后的元数据字典
+            Formatted metadata dictionary
         """
         formatted = {
             'doi': doi,
@@ -160,13 +160,13 @@ class DOIResolver:
             'url': f'https://doi.org/{doi}'
         }
 
-        # 提取标题
+        # Extract title
         if isinstance(metadata.get('title'), list) and metadata['title']:
             formatted['title'] = metadata['title'][0]
         elif isinstance(metadata.get('title'), str):
             formatted['title'] = metadata['title']
 
-        # 提取作者
+        # Extract authors
         authors = metadata.get('author', [])
         if authors:
             formatted['authors'] = [
@@ -174,11 +174,11 @@ class DOIResolver:
                 for author in authors
             ]
 
-        # 提取期刊名称
+        # Extract journal name
         if isinstance(metadata.get('container-title'), list) and metadata['container-title']:
             formatted['journal'] = metadata['container-title'][0]
 
-        # 提取发表日期
+        # Extract publication date
         if 'published-print' in metadata:
             date_parts = metadata['published-print'].get('date-parts', [[]])[0]
             formatted['publication_date'] = '-'.join(map(str, date_parts))
@@ -186,18 +186,18 @@ class DOIResolver:
             date_parts = metadata['published-online'].get('date-parts', [[]])[0]
             formatted['publication_date'] = '-'.join(map(str, date_parts))
 
-        # 提取摘要
+        # Extract abstract
         if 'abstract' in metadata:
             abstract = metadata['abstract']
-            # 移除XML标签
+            # Remove XML tags
             abstract = re.sub(r'<[^>]+>', '', abstract)
             formatted['abstract'] = abstract.strip()
 
-        # 提取关键词
+        # Extract keywords
         if 'subject' in metadata:
             formatted['keywords'] = metadata['subject']
 
-        # 提取卷期页码
+        # Extract volume, issue, pages
         if 'volume' in metadata:
             formatted['volume'] = metadata['volume']
         if 'issue' in metadata:
@@ -209,20 +209,20 @@ class DOIResolver:
 
     def extract_full_text(self, doi: str) -> Optional[str]:
         """
-        尝试提取全文（通常只有摘要）
+        Try to extract full text (usually only abstract available)
 
         Args:
-            doi: DOI字符串
+            doi: DOI string
 
         Returns:
-            全文文本或None
+            Full text or None
         """
         try:
             metadata = self.resolve(doi)
             abstract = metadata.get('abstract', '')
             title = metadata.get('title', '')
 
-            # 拼接标题和摘要作为全文
+            # Combine title and abstract as full text
             full_text = f"{title}\n\n{abstract}"
             return full_text if full_text.strip() else None
 

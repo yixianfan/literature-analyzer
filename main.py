@@ -1,6 +1,6 @@
 """
-文献整理在线工具
-支持API接入，自动识别文献类型并提取结构化信息
+Literature Analyzer Tool
+A FastAPI-based tool for automatic paper type classification and structured information extraction
 """
 
 from fastapi import FastAPI, HTTPException, BackgroundTasks
@@ -15,20 +15,20 @@ from modules.doi_resolver import DOIResolver
 from modules.info_extractor import InfoExtractor
 
 
-# 数据模型
+# Data models
 class TextInput(BaseModel):
-    """文本输入模型"""
-    text: str = Field(..., min_length=10, description="文献全文或摘要文本")
-    title: Optional[str] = Field(None, description="文献标题")
+    """Text input model"""
+    text: str = Field(..., min_length=10, description="Full text or abstract of the paper")
+    title: Optional[str] = Field(None, description="Title of the paper")
 
 
 class DOIInput(BaseModel):
-    """DOI输入模型"""
-    doi: str = Field(..., description="DOI字符串或DOI链接")
+    """DOI input model"""
+    doi: str = Field(..., description="DOI string or DOI URL")
 
 
 class AnalysisResponse(BaseModel):
-    """分析响应模型"""
+    """Analysis response model"""
     paper_type: str
     paper_type_description: str
     confidence: float
@@ -37,32 +37,32 @@ class AnalysisResponse(BaseModel):
     generation_time: str
 
 
-# 创建FastAPI应用
+# Create FastAPI application
 app = FastAPI(
-    title="文献整理在线工具",
-    description="自动识别文献类型并提取结构化信息的API工具",
+    title="Literature Analyzer",
+    description="API tool for automatic paper type classification and structured information extraction",
     version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc"
 )
 
-# 初始化组件
+# Initialize components
 doi_resolver = DOIResolver()
 info_extractor = InfoExtractor()
 
 
 @app.get("/")
 async def root():
-    """根路径，返回API信息"""
+    """Root endpoint, returns API information"""
     return {
-        "name": "文献整理在线工具",
+        "name": "Literature Analyzer",
         "version": "1.0.0",
         "docs": "/docs",
         "endpoints": {
-            "analyze_text": "/analyze/text - 分析文献文本",
-            "analyze_doi": "/analyze/doi - 通过DOI分析文献",
-            "health": "/health - 健康检查",
-            "paper_types": "/paper-types - 获取支持的文献类型"
+            "analyze_text": "/analyze/text - Analyze paper text",
+            "analyze_doi": "/analyze/doi - Analyze paper by DOI",
+            "health": "/health - Health check",
+            "paper_types": "/paper-types - Get supported paper types"
         }
     }
 
@@ -70,23 +70,23 @@ async def root():
 @app.post("/analyze/text", response_model=AnalysisResponse)
 async def analyze_text(input_data: TextInput):
     """
-    分析文献文本
+    Analyze paper text
 
     Args:
-        input_data: 文献文本数据
+        input_data: Paper text data
 
     Returns:
-        结构化分析结果
+        Structured analysis results
     """
     try:
-        # 验证文本
+        # Validate text
         if not input_data.text or len(input_data.text.strip()) < 10:
-            raise HTTPException(status_code=400, detail="文本内容过短，至少需要10个字符")
+            raise HTTPException(status_code=400, detail="Text content too short, minimum 10 characters required")
 
-        # 执行提取
+        # Perform extraction
         extracted_info = info_extractor.extract(input_data.text)
 
-        # 构建响应
+        # Build response
         response = AnalysisResponse(
             paper_type=extracted_info['classification']['type'],
             paper_type_description=extracted_info['classification']['type_description'],
@@ -101,45 +101,45 @@ async def analyze_text(input_data: TextInput):
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"分析文本时发生错误: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error analyzing text: {str(e)}")
 
 
 @app.post("/analyze/doi", response_model=AnalysisResponse)
 async def analyze_doi(input_data: DOIInput):
     """
-    通过DOI分析文献
+    Analyze paper by DOI
 
     Args:
-        input_data: DOI数据
+        input_data: DOI data
 
     Returns:
-        结构化分析结果
+        Structured analysis results
     """
     try:
-        # 验证DOI
+        # Validate DOI
         if not input_data.doi:
-            raise HTTPException(status_code=400, detail="DOI不能为空")
+            raise HTTPException(status_code=400, detail="DOI cannot be empty")
 
-        # 通过DOI获取元数据
+        # Get metadata from DOI
         metadata = doi_resolver.resolve(input_data.doi)
 
-        # 提取全文文本
+        # Extract full text
         text_content = doi_resolver.extract_full_text(input_data.doi)
 
         if not text_content:
-            # 如果无法获取全文，使用标题作为文本
+            # If full text not available, use title as text
             text_content = metadata.get('title', '')
 
         if not text_content or len(text_content.strip()) < 10:
             raise HTTPException(
                 status_code=404,
-                detail="无法获取足够的文献内容进行分析"
+                detail="Unable to retrieve sufficient paper content for analysis"
             )
 
-        # 执行提取
+        # Perform extraction
         extracted_info = info_extractor.extract(text_content, metadata)
 
-        # 构建响应
+        # Build response
         response = AnalysisResponse(
             paper_type=extracted_info['classification']['type'],
             paper_type_description=extracted_info['classification']['type_description'],
@@ -154,12 +154,12 @@ async def analyze_doi(input_data: DOIInput):
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"分析DOI时发生错误: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error analyzing DOI: {str(e)}")
 
 
 @app.get("/health")
 async def health_check():
-    """健康检查"""
+    """Health check endpoint"""
     return {
         "status": "healthy",
         "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -168,22 +168,22 @@ async def health_check():
 
 @app.get("/paper-types")
 async def get_paper_types():
-    """获取支持的文献类型"""
+    """Get supported paper types"""
     return {
         "supported_types": {
             "clinical_research": {
-                "name": "临床研究",
-                "description": "临床试验、队列研究等临床研究",
+                "name": "Clinical Research",
+                "description": "Clinical trials, cohort studies, and other clinical research",
                 "modules": info_extractor.get_template_modules('clinical_research')
             },
             "case_report": {
-                "name": "病例报告",
-                "description": "病例报告、案例分析",
+                "name": "Case Report",
+                "description": "Case reports and case studies",
                 "modules": info_extractor.get_template_modules('case_report')
             },
             "basic_research": {
-                "name": "基础研究",
-                "description": "基础实验、机制研究",
+                "name": "Basic Research",
+                "description": "Basic experiments and mechanism studies",
                 "modules": info_extractor.get_template_modules('basic_research')
             }
         }
@@ -192,11 +192,11 @@ async def get_paper_types():
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request, exc):
-    """全局异常处理器"""
+    """Global exception handler"""
     return JSONResponse(
         status_code=500,
         content={
-            "error": "服务器内部错误",
+            "error": "Internal server error",
             "detail": str(exc),
             "traceback": traceback.format_exc() if app.debug else None
         }
