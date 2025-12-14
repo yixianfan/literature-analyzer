@@ -1,163 +1,109 @@
-# 文献整理在线工具
+# Literature Analyzer
 
-一个基于Python的文献整理在线工具，自动识别文献类型并提取结构化信息，对标Paper-DeepReader-v2.0。
+A Python-based literature analysis tool that automatically identifies paper types and extracts structured information through API integration.
 
-## 📋 功能特点
+## Features
 
-- **文献类型自动识别**：支持临床研究、病例报告、基础研究三种类型
-- **结构化信息提取**：按照期刊标准模板提取关键信息
-- **DOI解析**：支持通过DOI链接自动获取文献信息
-- **API接口**：基于FastAPI的RESTful API，支持多种调用方式
-- **异常处理**：完善的错误处理和验证机制
+- **Automatic Paper Type Classification**: Supports Clinical Research, Case Reports, and Basic Research
+- **Structured Information Extraction**: Extracts key information based on journal-standard templates
+- **DOI Resolution**: Automatically retrieves paper information via DOI links
+- **API Interface**: RESTful API based on FastAPI with comprehensive documentation
+- **Robust Error Handling**: Comprehensive validation and exception handling
 
-## 🔧 工具工作流程
+## Workflow
 
-1. **输入接收**：接收文献文本或DOI链接
-2. **类型识别**：基于关键词和模式匹配自动识别文献类型
-3. **模板匹配**：根据文献类型选择对应的结构化模板
-4. **信息提取**：使用正则表达式和NLP技术提取关键信息
-5. **结果输出**：返回JSON格式的结构化分析报告
+1. **Input Reception**: Accepts paper text (full/abstract) or DOI links
+2. **Type Identification**: Automatically identifies paper type using keyword-based classification
+3. **Template Matching**: Selects corresponding structured template based on paper type
+4. **Information Extraction**: Uses regex and NLP techniques to extract key information
+5. **Result Output**: Returns JSON-formatted structured analysis report
 
-## 📁 项目结构
+## Project Structure
 
 ```
 literature_analyzer/
-├── main.py                    # FastAPI主程序
-├── requirements.txt           # 依赖包列表
-├── modules/                   # 核心模块
-│   ├── __init__.py
-│   ├── paper_classifier.py    # 文献类型识别器
-│   ├── doi_resolver.py        # DOI解析器
-│   └── info_extractor.py      # 信息提取器
-├── templates/                 # 结构化模板
-│   ├── __init__.py
-│   ├── clinical_template.py   # 临床研究模板（8大模块）
-│   ├── case_template.py       # 病例报告模板（5大模块）
-│   └── basic_template.py      # 基础研究模板（5大模块）
-├── tests/                     # 测试用例
+├── main.py                    # FastAPI main application
+├── requirements.txt           # Dependency list
+├── modules/                   # Core modules
+│   ├── paper_classifier.py    # Paper type classifier
+│   ├── doi_resolver.py        # DOI resolver
+│   └── info_extractor.py      # Information extractor
+├── templates/                 # Structured templates
+│   ├── clinical_template.py   # Clinical research template (8 modules)
+│   ├── case_template.py       # Case report template (5 modules)
+│   └── basic_template.py      # Basic research template (5 modules)
+├── tests/                     # Test cases
 │   ├── test_classifier.py
 │   ├── test_doi_resolver.py
 │   ├── test_templates.py
 │   └── test_api.py
-└── docs/                      # 文档
+└── docs/                      # Documentation
     └── API.md
 ```
 
-## 🚀 安装与部署
+## Quick Start
 
-### 环境要求
+### Installation
 
-- Python 3.8+
-- 网络连接（用于DOI解析）
-
-### 安装步骤
-
-1. **克隆项目**
 ```bash
-git clone <repository-url>
-cd literature_analyzer
-```
+# Clone the repository
+git clone https://github.com/yixianfan/literature-analyzer.git
+cd literature-analyzer
 
-2. **创建虚拟环境**
-```bash
+# Create virtual environment
 python -m venv venv
 source venv/bin/activate  # Linux/Mac
-# 或
+# or
 venv\Scripts\activate  # Windows
-```
 
-3. **安装依赖**
-```bash
+# Install dependencies
 pip install -r requirements.txt
-```
 
-4. **启动服务**
-```bash
-python main.py
-```
-
-或使用uvicorn：
-```bash
+# Start the server
+python start_server.py
+# or
 uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+# Access API documentation
+# Open: http://localhost:8000/docs
 ```
 
-5. **访问API文档**
-- Swagger UI: http://localhost:8000/docs
-- ReDoc: http://localhost:8000/redoc
+### Test the API
 
-## 📖 API 接口文档
+```bash
+# Run examples
+python examples.py
 
-### 1. 根路径
-```
-GET /
-```
-返回API基本信息。
-
-### 2. 健康检查
-```
-GET /health
-```
-检查服务状态。
-
-### 3. 获取支持的文献类型
-```
-GET /paper-types
-```
-返回支持的文献类型及其模块定义。
-
-### 4. 分析文本
-```
-POST /analyze/text
-Content-Type: application/json
-
-{
-    "text": "文献全文或摘要文本",
-    "title": "文献标题（可选）"
-}
+# Run tests
+python run_tests.py
 ```
 
-### 5. 通过DOI分析
-```
-POST /analyze/doi
-Content-Type: application/json
+## API Usage
 
-{
-    "doi": "DOI字符串或DOI链接"
-}
-```
+### Analyze Text
 
-## 💻 API 调用示例
-
-### 使用 curl
-
-**分析文献文本**
 ```bash
 curl -X POST "http://localhost:8000/analyze/text" \
      -H "Content-Type: application/json" \
      -d '{
-       "text": "This randomized controlled trial evaluated a new treatment in 100 patients with diabetes. The intervention group showed significant improvement (p<0.001).",
-       "title": "Diabetes Treatment Study"
+       "text": "This randomized controlled trial evaluated...",
+       "title": "Study Title"
      }'
 ```
 
-**通过DOI分析**
+### Analyze by DOI
+
 ```bash
 curl -X POST "http://localhost:8000/analyze/doi" \
      -H "Content-Type: application/json" \
-     -d '{"doi": "10.1000/xyz123"}'
+     -d '{"doi": "10.1371/journal.pone.0123456"}'
 ```
 
-**获取支持的文献类型**
-```bash
-curl -X GET "http://localhost:8000/paper-types"
-```
-
-### 使用 Python requests
+### Python Example
 
 ```python
 import requests
 
-# 分析文本
 url = "http://localhost:8000/analyze/text"
 data = {
     "text": "This randomized controlled trial evaluated...",
@@ -165,153 +111,86 @@ data = {
 }
 response = requests.post(url, json=data)
 result = response.json()
-print(result)
-
-# 分析DOI
-url = "http://localhost:8000/analyze/doi"
-data = {"doi": "10.1000/xyz123"}
-response = requests.post(url, json=data)
-result = response.json()
-print(result)
+print(f"Paper Type: {result['paper_type_description']}")
+print(f"Confidence: {result['confidence']:.2%}")
 ```
 
-### 使用 JavaScript fetch
+## Paper Types
 
-```javascript
-// 分析文本
-fetch('http://localhost:8000/analyze/text', {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-        text: '文献文本内容...',
-        title: '文献标题'
-    })
-})
-.then(response => response.json())
-.then(data => console.log(data));
-```
+### 1. Clinical Research
+**Standard**: Lancet journal structure (8 modules)
+- Background, Objective, Methods, Participants, Intervention, Outcomes, Results, Conclusion
 
-## 📊 输出格式
+### 2. Case Report
+**Standard**: Blood journal structure (5 modules)
+- Case Summary, Clinical Presentation, Diagnosis, Treatment, Outcome
 
-### 响应示例
+### 3. Basic Research
+**Standard Structure** (5 modules)
+- Scientific Question, Research Method, Results, Conclusion, Mechanism
+
+## Output Format
+
 ```json
 {
     "paper_type": "clinical_research",
-    "paper_type_description": "临床研究",
-    "confidence": 0.85,
+    "paper_type_description": "Clinical Research",
+    "confidence": 0.92,
     "core_info": {
-        "background": "研究背景信息...",
-        "objective": "研究目的...",
-        "methods": "研究方法...",
-        "participants": "研究对象...",
-        "intervention": "干预措施...",
-        "outcomes": "结局指标...",
-        "results": "研究结果...",
-        "conclusion": "结论..."
+        "background": "Background information...",
+        "objective": "Research objective...",
+        "methods": "Research methods...",
+        "participants": "Study subjects...",
+        "intervention": "Intervention details...",
+        "outcomes": "Outcome measures...",
+        "results": "Study results...",
+        "conclusion": "Conclusions..."
     },
-    "full_analysis": {
-        "paper_type": "clinical_research",
-        "modules": { ... },
-        "classification": { ... },
-        "metadata": { ... }
-    },
+    "full_analysis": { ... },
     "generation_time": "2025-12-14 17:02:00"
 }
 ```
 
-## 🧪 运行测试
+## Running Tests
 
 ```bash
-# 运行所有测试
+# Run all tests
 pytest
 
-# 运行特定测试
+# Run specific test
 pytest tests/test_classifier.py
 
-# 运行测试并显示覆盖率
+# Run with coverage
 pytest --cov=modules --cov=templates
 ```
 
-## 📝 文献类型说明
+## Tech Stack
 
-### 1. 临床研究（clinical_research）
-**参考标准**：Lancet期刊结构（8大模块）
-- **研究背景**：疾病背景和研究意义
-- **研究目的**：研究要解决的具体问题
-- **研究方法**：研究设计和实施方法
-- **研究对象**：受试者特征和纳入标准
-- **干预措施**：实验组和对照组的处理
-- **结局指标**：主要和次要终点
-- **研究结果**：主要发现和统计数据
-- **结论**：研究结论和临床意义
+- **Web Framework**: FastAPI 0.104.1
+- **HTTP Client**: requests 2.31.0
+- **Data Validation**: pydantic 2.5.0
+- **Text Processing**: nltk 3.8.1, regex
+- **Testing**: pytest 7.4.3
+- **Deployment**: uvicorn
 
-### 2. 病例报告（case_report）
-**参考标准**：Blood期刊结构（5大模块）
-- **病例概述**：患者基本信息和病史
-- **临床表现**：症状、体征和检查结果
-- **诊断过程**：诊断思路和检查发现
-- **治疗方案**：治疗措施和用药情况
-- **治疗结果**：疗效和随访情况
+## Notes
 
-### 3. 基础研究（basic_research）
-**标准结构**（5大模块）
-- **科学问题**：要解决的科学问题或研究空白
-- **研究方法**：实验设计、材料和方法
-- **研究结果**：实验数据和主要发现
-- **研究结论**：主要结论和意义
-- **作用机制**：分子机制和信号通路
+1. **Network Dependency**: DOI resolution requires internet access
+2. **Text Length**: Minimum 10 characters recommended (100+ for best results)
+3. **DOI Validity**: Ensure DOI link is accessible
+4. **Result Accuracy**: Auto-extracted results are for reference only, manual verification recommended
 
-## 🔍 技术实现
+## Documentation
 
-### 文献类型识别
-- 基于关键词加权评分
-- 支持中英文关键词
-- 动态置信度计算
+- **README.md** - Complete project documentation
+- **QUICKSTART.md** - Quick start guide
+- **docs/API.md** - Detailed API documentation
+- **examples.py** - Usage examples
 
-### 信息提取
-- 正则表达式模式匹配
-- 结构化模板提取
-- 多层次兜底策略
-
-### DOI解析
-- CrossRef API集成
-- PubMed API备用
-- 元数据标准化
-
-## ⚠️ 注意事项
-
-1. **网络依赖**：DOI解析需要网络连接
-2. **文本长度**：建议文本长度至少100字符
-3. **DOI有效性**：确保DOI链接可访问
-4. **结果准确性**：自动提取结果仅供参考，需人工验证
-
-## 🛠️ 扩展开发
-
-### 添加新的文献类型
-1. 在`paper_classifier.py`中添加关键词
-2. 创建对应的模板文件
-3. 在`info_extractor.py`中注册模板
-
-### 改进识别算法
-- 集成机器学习模型
-- 添加更多特征提取
-- 优化权重计算
-
-### 增强DOI解析
-- 添加更多数据源API
-- 实现全文抓取
-- 支持批量处理
-
-## 📄 许可证
+## License
 
 MIT License
 
-## 🤝 贡献
+## Contributing
 
-欢迎提交Issue和Pull Request！
-
-## 📧 联系方式
-
-如有问题，请提交Issue或联系开发团队。
+Issues and Pull Requests are welcome!
